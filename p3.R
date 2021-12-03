@@ -64,3 +64,21 @@ bohemiaTF3
 
 tm::inspect(bohemiaStopTDM)
 
+#dendrogram for chapter 1
+> bohemiadf<-as.data.frame(bohemiaStopTDM[[1]])
+> bohemiaDist<-dist(bohemiadf)
+> bohemiaDG<-hclust(bohemiaDist,method="ward.D2")
+> str(bohemiaDG)
+> plot(bohemiaDG)
+
+#dendrogram for chapter 2
+> bohemiadf2<-as.data.frame(bohemiaStopTDM[[2]])
+> bohemiaDist<-dist(bohemiadf2)
+> bohemiaDG<-hclust(bohemiaDist,method="ward.D2")
+> str(bohemiaDG)
+
+#dendrogram for chapter 3
+> bohemiadf3<-as.data.frame(bohemiaStopTDM[[3]])
+> bohemiaDist<-dist(bohemiadf2)
+> bohemiaDG<-hclust(bohemiaDist,method="ward.D2")
+> str(bohemiaDG)
