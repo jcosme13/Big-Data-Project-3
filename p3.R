@@ -76,9 +76,11 @@ tm::inspect(bohemiaStopTDM)
 > bohemiaDist<-dist(bohemiadf2)
 > bohemiaDG<-hclust(bohemiaDist,method="ward.D2")
 > str(bohemiaDG)
+> plot(bohemiaDG)
 
 #dendrogram for chapter 3
 > bohemiadf3<-as.data.frame(bohemiaStopTDM[[3]])
 > bohemiaDist<-dist(bohemiadf2)
 > bohemiaDG<-hclust(bohemiaDist,method="ward.D2")
 > str(bohemiaDG)
+> plot(bohemiaDG)
