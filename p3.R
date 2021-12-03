@@ -8,16 +8,59 @@ btext2<-bohemia[[2]]
 btext3<-bohemia[[3]]
 
 bohemiaDTM<-DocumentTermMatrix(bohemia)
+inspect(bohemiaDTM)
+str(bohemiaDTM)
 
 bohemiaTDM<-tm::TermDocumentMatrix(bohemia)
 bohemiaTDM
 
-freqTerms<-tm::findFreqTerms(bohemiaTDM, lowfreq=5)
+bohemiadf1<-data.frame(btext1[1])
+bohemiadf2<-data.frame(btext2[1])
+bohemiadf3<-data.frame(btext3[1])
 
-for (i in freqTerms) {
-      wordLen<-nchar(freqTerms[i])
-    }
+# freqTerms<-tm::findFreqTerms(bohemiaTDM, lowfreq=5)
+# 
+# for (i in freqTerms) {
+#       wordLen<-nchar(freqTerms[i])
+#     }
 
+## remove numbers and punctuation
+removeNumPunct<-function(x) gsub("[^[:alpha:][:space:]]*","",x)
+removeHTML<-function(x) gsub("<.*?>", "", x)
+
+# create a clean corpus
+bohemiaCl0<-tm::tm_map(bohemia, content_transformer(removeHTML))
+bohemiaCl1<-tm::tm_map(bohemiaCl0, content_transformer(removeNumPunct))
+str(bohemiaCl1)
+inspect(bohemiaCl1)
+
+# convert to lowercase
+bohemiaLow<-tm_map(bohemiaCl1, tm::content_transformer(tolower))
+str(bohemiaLow)
+inspect(bohemiaLow)
+
+bohemiaDTM<-DocumentTermMatrix(bohemiaLow)
+str(bohemiaDTM)
+inspect(bohemiaDTM)
+as.matrix(bohemiaDTM)
 
 myStopWords<-c(tm::stopwords("english"))
-bohemiaStop<-tm::tm_map(bohemia,tm::removeWords,myStopWords)
+bohemiaStop<-tm::tm_map(bohemiaLow,tm::removeWords,myStopWords)
+tm::inspect(bohemiaStop[[1]])
+tm::inspect(bohemiaStop[[2]])
+tm::inspect(bohemiaStop[[3]])
+
+bohemiaStopTDM<-tm::TermDocumentMatrix(bohemiaStop)
+
+freqTerms<-tm::findFreqTerms(bohemiaStopTDM, lowfreq=5)
+freqTerms
+
+bohemiaTF1<-tm::termFreq(bohemiaStop[[1]])
+bohemiaTF1
+bohemiaTF2<-tm::termFreq(bohemiaStop[[2]])
+bohemiaTF2
+bohemiaTF3<-tm::termFreq(bohemiaStop[[3]])
+bohemiaTF3
+
+tm::inspect(bohemiaStopTDM)
+
