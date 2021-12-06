@@ -3,11 +3,15 @@ install.packages("wordcloud")
 install.packages("zipfR")
 install.packages("tokenizers")
 install.packages("tidyverse")
+install.packages("qdapTools")
+install.packages("qdapRegex")
 library(tm)
 library(wordcloud)
 library(zipfR)
 library(tokenizers)
 library(tidyverse)
+library(qdapTools)
+library(qdapRegex)
 
 bohemia<-VCorpus(DirSource(".", ignore.case=FALSE, mode="text"))
 str(bohemia)
@@ -171,12 +175,59 @@ bohemiaNewDF3<-as.data.frame(bohemiaNewTDM[[3]])
 bohemiaNewDist3<-dist(bohemiaNewDF3)
 bohemiaNewDG3<-hclust(bohemiaNewDist3,method="ward.D2")
 str(bohemiaNewDG3)
-plot(bohemiaNewDG3)
+plot(bohemiaNewDG3, labels=FALSE)
+
+removeWords<-function(x) gsub("\\b\\w{1,10}\\b", "", x)
+bohemiaLowNew<-tm_map(bohemiaLow, tm::content_transformer(removeWords))
+bohemiaNewTDM1<-tm::TermDocumentMatrix(bohemiaLowNew)
+
+bohemiaNewDF1.1<-as.data.frame(bohemiaNewTDM1[[1]])
+bohemiaNewDist1.1<-dist(bohemiaNewDF1.1)
+bohemiaNewDG1.1<-hclust(bohemiaNewDist1.1,method="ward.D2")
+str(bohemiaNewDG1.1)
+plot(bohemiaNewDG1.1, labels=FALSE)
+
+bohemiaNewDF2.1<-as.data.frame(bohemiaNewTDM1[[2]])
+bohemiaNewDist2.1<-dist(bohemiaNewDF2.1)
+bohemiaNewDG2.1<-hclust(bohemiaNewDist2.1,method="ward.D2")
+str(bohemiaNewDG2.1)
+plot(bohemiaNewDG2.1, labels=FALSE)
+
+bohemiaNewDF3.1<-as.data.frame(bohemiaNewTDM1[[3]])
+bohemiaNewDist3.1<-dist(bohemiaNewDF3.1)
+bohemiaNewDG3.1<-hclust(bohemiaNewDist3.1,method="ward.D2")
+str(bohemiaNewDG3.1)
+plot(bohemiaNewDG3.1, labels=FALSE)
 
 ## zipfR package
+
+# Chapter 1
 bohemia1.spc<-spc(bohemiaTF1)
 summary(bohemia1.spc)
 Vm(bohemia1.spc,1) / N(bohemia1.spc)
+plot(bohemia1.spc)
+plot(bohemia1.spc, log="x")
+with(bohemia1.spc, plot(m, Vm, main="Chapter 1 Frequency Spectrum"))
+# vocabulary growth curve
+bohemia1.lnre<-lnre("zm", bohemia1.spc)
+bohemia1.emp.vgc<-lnre.vgc(bohemia1.lnre, 1:807448)
+head(bohemia1.emp.vgc)
+summary(bohemia1.emp.vgc)
+plot(bohemia1.emp.vgc)
+# interpolated growth curve
+bohemia1.bin.vgc<-vgc.interp(bohemia1.spc, N(bohemia1.emp.vgc, m.max=1))
+head(bohemia1.bin.vgc)
+plot(bohemia1.emp.vgc, bohemia1.bin.vgc, legend=c("observed", "interpolated"))
+
+bohemia1.fzm<-lnre("fzm", bohemia1.spc, exact=FALSE)
+summary(bohemia1.fzm)
+bohemia1.fzm.spc<-lnre.spc(bohemia1.fzm, N(bohemia1.fzm))
+plot(bohemia1.spc, bohemia1.fzm.spc, legend=c("observed", "fZM"))
+bohemia1.fzm.vgc<-lnre.vgc(bohemia1.fzm, (1:100)*N(bohemia1.spc)*2)
+plot(bohemia1.emp.vgc, bohemia1.fzm.vgc, legend=c("observed", "fZM"))
+# evaluating extrapolation quality
+bohemia1.sub.spc<-sample.spc(bohemia1.spc, N=40000)
+
 
 bohemia2.spc<-spc(bohemiaTF2)
 summary(bohemia2.spc)
@@ -199,6 +250,3 @@ bohemiaWC2<-wordcloud(words2,bohemiaTF2, scale=c(3,.5), colors=pal2)
 
 words3<-names(bohemiaTF3)
 bohemiaWC3<-wordcloud(words3,bohemiaTF3, colors=pal2)
-
-
-
