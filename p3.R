@@ -140,43 +140,44 @@ bohemiaDF1<-as.data.frame(bohemiaStopTDM[[1]])
 bohemiaDist1<-dist(bohemiaDF1)
 bohemiaDG1<-hclust(bohemiaDist1,method="ward.D2")
 str(bohemiaDG1)
-plot(bohemiaDG1)
+plot(bohemiaDG1, labels=FALSE)
 
 bohemiaDF2<-as.data.frame(bohemiaStopTDM[[2]])
 bohemiaDist2<-dist(bohemiaDF2)
 bohemiaDG2<-hclust(bohemiaDist2,method="ward.D2")
 str(bohemiaDG2)
-plot(bohemiaDG2)
+plot(bohemiaDG2, labels=FALSE)
 
 bohemiaDF3<-as.data.frame(bohemiaStopTDM[[3]])
 bohemiaDist3<-dist(bohemiaDF3)
 bohemiaDG3<-hclust(bohemiaDist3,method="ward.D2")
 str(bohemiaDG3)
-plot(bohemiaDG3)
+plot(bohemiaDG3, labels=FALSE)
+# 
+# bohemiaStopNew<-tm::tm_map(bohemiaStop, tm::removeWords, c("even", "will", "may", "soon", "can", "as", "one", "much", "just", "now", "quite", "merely", "shall", "take", "certain", "well"))
+# str(bohemiaStopNew)
+# 
+# bohemiaNewTDM<-tm::TermDocumentMatrix(bohemiaStopNew)
+# 
+# bohemiaNewDF1<-as.data.frame(bohemiaNewTDM[[1]])
+# bohemiaNewDist1<-dist(bohemiaNewDF1)
+# bohemiaNewDG1<-hclust(bohemiaNewDist1,method="ward.D2")
+# str(bohemiaNewDG1)
+# plot(bohemiaNewDG1)
+# 
+# bohemiaNewDF2<-as.data.frame(bohemiaNewTDM[[2]])
+# bohemiaNewDist2<-dist(bohemiaNewDF2)
+# bohemiaNewDG2<-hclust(bohemiaNewDist2,method="ward.D2")
+# str(bohemiaNewDG2)
+# plot(bohemiaNewDG2)
+# 
+# bohemiaNewDF3<-as.data.frame(bohemiaNewTDM[[3]])
+# bohemiaNewDist3<-dist(bohemiaNewDF3)
+# bohemiaNewDG3<-hclust(bohemiaNewDist3,method="ward.D2")
+# str(bohemiaNewDG3)
+# plot(bohemiaNewDG3, labels=FALSE)
 
-bohemiaStopNew<-tm::tm_map(bohemiaStop, tm::removeWords, c("even", "will", "may", "soon", "can", "as", "one", "much", "just", "now", "quite", "merely", "shall", "take", "certain", "well"))
-str(bohemiaStopNew)
-
-bohemiaNewTDM<-tm::TermDocumentMatrix(bohemiaStopNew)
-
-bohemiaNewDF1<-as.data.frame(bohemiaNewTDM[[1]])
-bohemiaNewDist1<-dist(bohemiaNewDF1)
-bohemiaNewDG1<-hclust(bohemiaNewDist1,method="ward.D2")
-str(bohemiaNewDG1)
-plot(bohemiaNewDG1)
-
-bohemiaNewDF2<-as.data.frame(bohemiaNewTDM[[2]])
-bohemiaNewDist2<-dist(bohemiaNewDF2)
-bohemiaNewDG2<-hclust(bohemiaNewDist2,method="ward.D2")
-str(bohemiaNewDG2)
-plot(bohemiaNewDG2)
-
-bohemiaNewDF3<-as.data.frame(bohemiaNewTDM[[3]])
-bohemiaNewDist3<-dist(bohemiaNewDF3)
-bohemiaNewDG3<-hclust(bohemiaNewDist3,method="ward.D2")
-str(bohemiaNewDG3)
-plot(bohemiaNewDG3, labels=FALSE)
-
+# remove words with length <= 10
 removeWords<-function(x) gsub("\\b\\w{1,10}\\b", "", x)
 bohemiaLowNew<-tm_map(bohemiaLow, tm::content_transformer(removeWords))
 bohemiaNewTDM1<-tm::TermDocumentMatrix(bohemiaLowNew)
@@ -226,16 +227,29 @@ plot(bohemia1.spc, bohemia1.fzm.spc, legend=c("observed", "fZM"))
 bohemia1.fzm.vgc<-lnre.vgc(bohemia1.fzm, (1:100)*N(bohemia1.spc)*2)
 plot(bohemia1.emp.vgc, bohemia1.fzm.vgc, legend=c("observed", "fZM"))
 # evaluating extrapolation quality
+set.seed(42)
 bohemia1.sub.spc<-sample.spc(bohemia1.spc, N=40000)
+bohemia1.sub.fzm<-lnre("fzm", bohemia1.sub.spc, exact=FALSE)
+bohemia1.sub.fzm
 
+bohemia1.sub.fzm.vgc<-lnre.vgc(bohemia1.sub.fzm, N=N(bohemia1.emp.vgc))
+plot(bohemia1.bin.vgc, bohemia1.sub.fzm.vgc, N0=N(bohemia1.sub.fzm), legend=c("interpolated","fZM"))
 
+# Chapter 2
 bohemia2.spc<-spc(bohemiaTF2)
 summary(bohemia2.spc)
 Vm(bohemia2.spc,1) / N(bohemia2.spc)
+plot(bohemia2.spc)
+plot(bohemia2.spc, log="x")
+with(bohemia2.spc, plot(m, Vm, main="Chapter 2 Frequency Spectrum"))
 
+# Chapter 3
 bohemia3.spc<-spc(bohemiaTF3)
 summary(bohemia3.spc)
 Vm(bohemia3.spc,1) / N(bohemia3.spc)
+plot(bohemia3.spc)
+plot(bohemia3.spc, log="x")
+with(bohemia3.spc, plot(m, Vm, main="Chapter 3 Frequency Spectrum"))
 
 ## word clouds
 pal<-brewer.pal(9,"BuGn")
