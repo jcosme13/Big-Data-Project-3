@@ -66,8 +66,8 @@ orderedSent = sentences[order(-sentences$length),]
 head(orderedSent,10)
 
 #at each row in orderedSent
-#for (i in 1:nrow(orderedSent)){
-for (i in 1:10){
+for (i in 1:nrow(orderedSent)){
+#for (i in 1:10){
   #get sentence in row
   cur.row<-orderedSent[i,]$sent
   #set up bigram
