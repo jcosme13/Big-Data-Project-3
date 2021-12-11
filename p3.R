@@ -30,12 +30,6 @@ bohemiadf1<-data.frame(btext1[1])
 bohemiadf2<-data.frame(btext2[1])
 bohemiadf3<-data.frame(btext3[1])
 
-# freqTerms<-tm::findFreqTerms(bohemiaTDM, lowfreq=5)
-# 
-# for (i in freqTerms) {
-#       wordLen<-nchar(freqTerms[i])
-#     }
-
 ## Chapter 1 -- 10 longest words
 bohemiaCh1<-read_file("AScandalInBohemiaI.txt")
 bohemiaCh1Nonl<-str_replace_all(bohemiaCh1, "\n", " ")
@@ -70,6 +64,32 @@ for(i in 1:nrow(sentences)){
 head(sentences)
 orderedSent = sentences[order(-sentences$length),]
 head(orderedSent,10)
+
+#at each row in orderedSent
+#for (i in 1:nrow(orderedSent)){
+for (i in 1:10){
+  #get sentence in row
+  cur.row<-orderedSent[i,]$sent
+  #set up bigram
+  bi<-ngram(cur.row, n=2)
+  #produce bigram as a vector of strings
+  y<-get.ngrams(bi)
+  bigrams<-(0)
+  #tokenize each word in sentence
+  z<-tokenize_words(y)
+  #parse thru each word in sentence
+  for (i in 1:length(z)){
+    #if length of word 1 or word 2 is >6
+    if (str_length(as.numeric(unlist(z[i][1]))>6) || str_length(as.numeric(unlist(z[i][2]))>6)){
+       #if (is.na(z[i][1]) || is.na(z[i][2])) {
+        #print('Missing')
+       #}
+       #if (z[i][1] != "NA" && z[i][2]!= "NA"){
+         bigrams<-c(bigrams, y[i])
+       #}
+    }
+  }
+}
 
 ## Chapter 2 -- 10 longest words
 bohemiaCh2<-read_file("AScandalInBohemiaII.txt")
