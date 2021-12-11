@@ -9,6 +9,7 @@ install.packages("syuzhet")
 install.packages("quanteda")
 install.packages("stringdist")
 install.packages("stringi")
+install.packages("ngram")
 library(tm)
 library(wordcloud)
 library(zipfR)
@@ -20,6 +21,7 @@ library(syuzhet)
 library(quanteda)
 library(stringdist)
 library(stringi)
+library(ngram)
 
 bohemia<-VCorpus(DirSource(".", ignore.case=FALSE, mode="text"))
 str(bohemia)
@@ -98,6 +100,55 @@ bohemia3.ordered<-bohemiaCh3.words[order(-bohemiaCh3.words$length),]
 bohemia3.ordered.distinct<-distinct(bohemia3.ordered)
 head(bohemia3.ordered.distinct, 10)
 
+##Chapter 1 -- longest sentences
+tsent = tokenize_sentences(bohemiaCh1Cl)
+sentences = data.frame(c("sent" = tsent,"length"=0),stringsAsFactors = FALSE)
+head(sentences)
+
+for(i in 1:nrow(sentences)){
+  this.row = sentences[i,]
+  len = str_count(this.row['sent']," ")
+  this.row['length']=len+1
+  sentences[i,]=this.row
+}
+head(sentences)
+orderedSent = sentences[order(-sentences$length),]
+longestSent1<-head(orderedSent,10)
+longestSent1
+
+# longestSent1<-tokenize_words(as.character(orderedSent[[1]]))
+# longestSent1DF<-data.frame(c("word"=w, "length"=0), stringAsFactors=FALSE)
+
+# for(i in 1:nrow(orderedSent)) {
+#   cur.row1<-orderedSent[[i]]
+#   for(j in 1:nrow(orderedSent)) {
+#     cur.row2<-orderedSent[[i]][[j]]
+#     print("in here")
+#     if () {
+#       
+#     }
+#   }
+#   
+# }
+
+
+for (j in nrow(longestSent1)) {
+    print("here 2")
+    v <- gsub("[[:punct:]]", " ", as.character(longestSent1[[1]]))
+    print(v)
+    print("gsub")
+    a=(strsplit(v, " "))
+    print("string  split")
+      x<-nchar(a[[j]])
+      print(x)
+      print("nchar")
+      y<-a[[j]] [x %in% 7:15]
+      print("limit")
+      z<-paste(unlist(y), collapse=" ")
+      z
+      print(ngram(z, n=2), output="full")
+  }
+
 ## remove numbers and punctuation
 removeNumPunct<-function(x) gsub("[^[:alpha:][:space:]]*","",x)
 removeHTML<-function(x) gsub("<.*?>", "", x)
@@ -125,19 +176,21 @@ tm::inspect(bohemiaStop[[2]])
 tm::inspect(bohemiaStop[[3]])
 
 bohemiaStopTDM<-tm::TermDocumentMatrix(bohemiaStop)
+bohemiaStopTDM
 
 freqTerms<-tm::findFreqTerms(bohemiaStopTDM, lowfreq=5)
 freqTerms
 
 bohemiaTF1<-tm::termFreq(bohemiaStop[[1]])
-bohemiaTF1
+bohemiaTF1[1:30]
 bohemiaTF2<-tm::termFreq(bohemiaStop[[2]])
-bohemiaTF2
+bohemiaTF2[1:30]
 bohemiaTF3<-tm::termFreq(bohemiaStop[[3]])
-bohemiaTF3
+bohemiaTF3[1:30]
 
 tm::inspect(bohemiaStopTDM)
 
+## dendrograms
 bohemiaDF1<-as.data.frame(bohemiaStopTDM[[1]])
 bohemiaDist1<-dist(bohemiaDF1)
 bohemiaDG1<-hclust(bohemiaDist1,method="ward.D2")
@@ -184,6 +237,7 @@ removeWords<-function(x) gsub("\\b\\w{1,10}\\b", "", x)
 bohemiaLowNew<-tm_map(bohemiaLow, tm::content_transformer(removeWords))
 bohemiaNewTDM1<-tm::TermDocumentMatrix(bohemiaLowNew)
 
+## new dendrograms
 bohemiaNewDF1.1<-as.data.frame(bohemiaNewTDM1[[1]])
 bohemiaNewDist1.1<-dist(bohemiaNewDF1.1)
 bohemiaNewDG1.1<-hclust(bohemiaNewDist1.1,method="ward.D2")
@@ -292,7 +346,7 @@ bohemiaSentimentBingMean1<-mean(bohemiaSentimentBing1)
 bohemiaSentimentBingMean1
 # NRC
 bohemiaNRC1<-get_nrc_sentiment(bohemiaSentences1)
-bohemiaNRC1
+bohemiaNRC1[1:10,]
 summary(bohemiaSentiment1)
 summary(bohemiaSentimentBing1)
 summary(bohemiaNRC1)
@@ -333,7 +387,7 @@ bohemiaSentimentBingMean2<-mean(bohemiaSentimentBing2)
 bohemiaSentimentBingMean2
 # NRC
 bohemiaNRC2<-get_nrc_sentiment(bohemiaSentences2)
-bohemiaNRC2
+bohemiaNRC2[1:10,]
 summary(bohemiaSentiment2)
 summary(bohemiaSentimentBing2)
 summary(bohemiaNRC2)
@@ -374,7 +428,7 @@ bohemiaSentimentBingMean3<-mean(bohemiaSentimentBing3)
 bohemiaSentimentBingMean3
 # NRC
 bohemiaNRC3<-get_nrc_sentiment(bohemiaSentences3)
-bohemiaNRC3
+bohemiaNRC3[1:10,]
 summary(bohemiaSentiment3)
 summary(bohemiaSentimentBing3)
 summary(bohemiaNRC3)
