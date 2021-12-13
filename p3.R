@@ -201,11 +201,19 @@ bohemiaTF3
 
 tm::inspect(bohemiaStopTDM)
 
+#dendrogram
 bohemiaDF1<-as.data.frame(bohemiaStopTDM[[1]])
-bohemiaDist1<-dist(bohemiaDF1)
-bohemiaDG1<-hclust(bohemiaDist1,method="ward.D2")
-str(bohemiaDG1)
-plot(bohemiaDG1, labels=FALSE)
+
+#DENDROGRAM WITH WORD LABELS
+distMatrix<-dist(bohemiaDF1, method = "euclidean")
+distMatrix<-na.omit(distMatrix)
+bohemiaDG1<-hclust(distMatrix, method="ward.D2")
+plot(bohemiaDG1)
+
+#bohemiaDist1<-dist(bohemiaDF1)
+#bohemiaDG1<-hclust(bohemiaDist1,method="ward.D2")
+#str(bohemiaDG1)
+#plot(bohemiaDG1, labels=FALSE)
 
 bohemiaDF2<-as.data.frame(bohemiaStopTDM[[2]])
 bohemiaDist2<-dist(bohemiaDF2)
