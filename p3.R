@@ -116,38 +116,156 @@ orderedSent = sentences[order(-sentences$length),]
 longestSent1<-head(orderedSent,10)
 longestSent1
 
-# longestSent1<-tokenize_words(as.character(orderedSent[[1]]))
-# longestSent1DF<-data.frame(c("word"=w, "length"=0), stringAsFactors=FALSE)
+##Chapter 2 -- longest sentences
+s = tokenize_sentences(bohemiaCh2Cl)
+sentences = data.frame(c("sent" = s,"length"=0),stringsAsFactors = FALSE)
+head(sentences)
 
-# for(i in 1:nrow(orderedSent)) {
-#   cur.row1<-orderedSent[[i]]
-#   for(j in 1:nrow(orderedSent)) {
-#     cur.row2<-orderedSent[[i]][[j]]
-#     print("in here")
-#     if () {
-#       
-#     }
-#   }
-#   
-# }
+for(i in 1:nrow(sentences)){
+  s = sentences[i,]
+  l = str_count(s['sent']," ")
+  s['length']=l+1
+  sentences[i,]=s
+}
+head(sentences)
+orderedSent = sentences[order(-sentences$length),]
+longestSent2<-head(orderedSent,10)
+longestSent2
 
+##Chapter 3 -- longest sentences
+s = tokenize_sentences(bohemiaCh3Cl)
+sentences = data.frame(c("sent" = s,"length"=0),stringsAsFactors = FALSE)
+head(sentences)
 
-for (j in nrow(longestSent1)) {
-    print("here 2")
-    v <- gsub("[[:punct:]]", " ", as.character(longestSent1[[1]]))
-    print(v)
-    print("gsub")
-    a=(strsplit(v, " "))
-    print("string  split")
-      x<-nchar(a[[j]])
-      print(x)
-      print("nchar")
-      y<-a[[j]] [x %in% 7:15]
-      print("limit")
-      z<-paste(unlist(y), collapse=" ")
-      z
-      print(ngram(z, n=2), output="full")
+for(i in 1:nrow(sentences)){
+  s = sentences[i,]
+  l = str_count(s['sent']," ")
+  s['length']=l+1
+  sentences[i,]=s
+}
+head(sentences)
+orderedSent = sentences[order(-sentences$length),]
+longestSent3<-head(orderedSent,10)
+longestSent3
+
+## Chapter 1 word extraction
+count<-1
+count2<-1
+zList1<-c()
+
+for (i in 1:nrow(longestSent1)) {
+  counter<-paste("count: ", count, sep="")
+  v <- gsub("[[:punct:]]", " ", as.character(longestSent1[[1]][i]))
+  a=(strsplit(v, " "))
+  count<-count+1
+  for (j in 1:length(a[[1]])) {
+      if (count2 > length(a[[1]])) {
+        count2<-0
+      }
+      x<-nchar(a[[1]])
+      y<-a[[1]] [x %in% 7:15]
+      z<-paste(y, collapse=" ")
+      zList1[[i]]<-z
+      count2<-count2+1
+    }
+}
+
+## Chapter 2 word extraction
+count<-1
+count2<-1
+zList2<-c()
+rm(i)
+rm(j)
+
+for (i in 1:nrow(longestSent2)) {
+  counter<-paste("count: ", count, sep="")
+  v <- gsub("[[:punct:]]", " ", as.character(longestSent2[[1]][i]))
+  a=(strsplit(v, " "))
+  count<-count+1
+  for (j in 1:length(a[[1]])) {
+    if (count2 > length(a[[1]])) {
+      count2<-0
+    }
+    x<-nchar(a[[1]])
+    y<-a[[1]] [x %in% 7:15]
+    z<-paste(y, collapse=" ")
+    zList2[[i]]<-z
+    count2<-count2+1
   }
+}
+
+## Chapter 3 word extraction
+count<-1
+count2<-1
+zList3<-c()
+rm(i)
+rm(j)
+
+for (i in 1:nrow(longestSent3)) {
+  counter<-paste("count: ", count, sep="")
+  v <- gsub("[[:punct:]]", " ", as.character(longestSent3[[1]][i]))
+  a=(strsplit(v, " "))
+  count<-count+1
+  for (j in 1:length(a[[1]])) {
+    if (count2 > length(a[[1]])) {
+      count2<-0
+    }
+    x<-nchar(a[[1]])
+    y<-a[[1]] [x %in% 7:15]
+    z<-paste(y, collapse=" ")
+    zList3[[i]]<-z
+    count2<-count2+1
+  }
+}
+
+## bigrams
+# Chapter 1
+for (k in 1:length(zList1)) {
+  print("-----start-----")
+  print(ngram(zList1[[k]], n=2), output="full")
+  print("------end------")
+}
+
+# Chapter 2
+for (k in 1:length(zList2)) {
+  print("-----start-----")
+  print(ngram(zList2[[k]], n=2), output="full")
+  print("------end------")
+}
+
+# Chapter 3
+for (k in 1:length(zList3)) {
+  print("-----start-----")
+  print(ngram(zList3[[k]], n=2), output="full")
+  print("------end------")
+}
+
+## trigrams
+# Chapter 1
+for (k in 1:length(zList1)) {
+  print("-----start-----")
+  print(ngram(zList1[[k]], n=3), output="full")
+  print("------end------")
+}
+
+# Chapter 2
+for (k in 1:length(zList2)) {
+  print("-----start-----")
+  print(ngram(zList2[[k]], n=3), output="full")
+  print("------end------")
+}
+
+# Chapter 3
+for (k in 1:length(zList3)) {
+  if(k == 2 | k == 6 | k == 8) {
+    print("trigram not possible")
+  }
+  else {
+    print("-----start-----")
+    print(ngram(zList3[[k]], n=3), output="full")
+    print("------end------")
+  }
+}
 
 ## remove numbers and punctuation
 removeNumPunct<-function(x) gsub("[^[:alpha:][:space:]]*","",x)
@@ -501,11 +619,4 @@ str(bohemiaTFIDF3)
 stringdist(as.character(btext1[1]), as.character(btext2[1]))
 stringdist(as.character(btext1[1]), as.character(btext3[1]))
 stringdist(as.character(btext2[1]), as.character(btext3[1]))
-
-## bigrams and trigrams
-
-## stringi
-
-stringi::stri_stats_general(bohemiaAsString1)
-
 
