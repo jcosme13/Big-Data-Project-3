@@ -36,8 +36,8 @@ bohemiaCh1Nonl<-str_replace_all(bohemiaCh1, "\n", " ")
 bohemiaCh1Cl<-str_remove_all(bohemiaCh1Nonl, "\r")
 bohemiaCh1Cl<-gsub("\\\\", "", bohemiaCh1Cl)
 
-w<-tokenize_words(bohemiaCh1Cl)
-bohemiaCh1.words<-data.frame(c("word"=w,"length"=0), stringsAsFactors = FALSE)
+words<-tokenize_words(bohemiaCh1Cl)
+bohemiaCh1.words<-data.frame(c("word"=words,"length"=0), stringsAsFactors = FALSE)
 
 for(i in 1:nrow(bohemiaCh1.words)) {
   this.row<-bohemiaCh1.words[i,]
@@ -51,19 +51,19 @@ bohemia1.ordered.distinct<-distinct(bohemia1.ordered)
 head(bohemia1.ordered.distinct, 10)
 
 ##Chapter 1 -- longest sentences
-tsent = tokenize_sentences(bohemiaCh1Cl)
-sentences = data.frame(c("sent" = tsent,"length"=0),stringsAsFactors = FALSE)
+tsent <- tokenize_sentences(bohemiaCh1Cl)
+sentences <- data.frame(c("sent" = tsent,"length"=0),stringsAsFactors = FALSE)
 head(sentences)
 
 for(i in 1:nrow(sentences)){
-  this.row = sentences[i,]
-  len = str_count(this.row['sent']," ")
-  this.row['length']=len+1
-  sentences[i,]=this.row
+  this.row <- sentences[i,]
+  len <- str_count(this.row['sent']," ")
+  this.row['length']<-len+1
+  sentences[i,]<-this.row
 }
 head(sentences)
-orderedSent = sentences[order(-sentences$length),]
-head(orderedSent,10)
+inOrder <- sentences[order(-sentences$length),]
+head(inOrder,10)
 
 #at each row in orderedSent
 for (i in 1:nrow(orderedSent)){
