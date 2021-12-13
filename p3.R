@@ -46,19 +46,46 @@ bohemiaCh1Nonl<-str_replace_all(bohemiaCh1, "\n", " ")
 bohemiaCh1Cl<-str_remove_all(bohemiaCh1Nonl, "\r")
 bohemiaCh1Cl<-gsub("\\\\", "", bohemiaCh1Cl)
 
-w<-tokenize_words(bohemiaCh1Cl)
-bohemiaCh1.words<-data.frame(c("word"=w,"length"=0), stringsAsFactors = FALSE)
+words<-tokenize_words(bohemiaCh1Cl)
+bohemiaCh1.words<-data.frame(c("word"=words,"length"=0), stringsAsFactors = FALSE)
 
 for(i in 1:nrow(bohemiaCh1.words)) {
-  s<-bohemiaCh1.words[i,]
-  l<-nchar(s['word'])
-  s['length']<-l
-  bohemiaCh1.words[i,]<-s
+  this.row<-bohemiaCh1.words[i,]
+  len<-nchar(this.row['word'])
+  this.row['length']<-len
+  bohemiaCh1.words[i,]<-this.row
 }
 
 bohemia1.ordered<-bohemiaCh1.words[order(-bohemiaCh1.words$length),]
 bohemia1.ordered.distinct<-distinct(bohemia1.ordered)
 head(bohemia1.ordered.distinct, 10)
+
+
+#at each row in orderedSent
+for (i in 1:nrow(orderedSent)){
+#for (i in 1:10){
+  #get sentence in row
+  cur.row<-orderedSent[i,]$sent
+  #set up bigram
+  bi<-ngram(cur.row, n=2)
+  #produce bigram as a vector of strings
+  y<-get.ngrams(bi)
+  bigrams<-(0)
+  #tokenize each word in sentence
+  z<-tokenize_words(y)
+  #parse thru each word in sentence
+  for (i in 1:length(z)){
+    #if length of word 1 or word 2 is >6
+    if (str_length(as.numeric(unlist(z[i][1]))>6) || str_length(as.numeric(unlist(z[i][2]))>6)){
+       #if (is.na(z[i][1]) || is.na(z[i][2])) {
+        #print('Missing')
+       #}
+       #if (z[i][1] != "NA" && z[i][2]!= "NA"){
+         bigrams<-c(bigrams, y[i])
+       #}
+    }
+  }
+}
 
 ## Chapter 2 -- 10 longest words
 bohemiaCh2<-read_file("AScandalInBohemiaII.txt")
@@ -80,6 +107,7 @@ bohemia2.ordered<-bohemiaCh2.words[order(-bohemiaCh2.words$length),]
 bohemia2.ordered.distinct<-distinct(bohemia2.ordered)
 head(bohemia2.ordered.distinct, 10)
 
+
 ## Chapter 3 -- 10 longest words
 bohemiaCh3<-read_file("AScandalInBohemiaIII.txt")
 bohemiaCh3Nonl<-str_replace_all(bohemiaCh3, "\n", " ")
@@ -99,6 +127,7 @@ for(i in 1:nrow(bohemiaCh3.words)) {
 bohemia3.ordered<-bohemiaCh3.words[order(-bohemiaCh3.words$length),]
 bohemia3.ordered.distinct<-distinct(bohemia3.ordered)
 head(bohemia3.ordered.distinct, 10)
+
 
 ##Chapter 1 -- longest sentences
 tsent = tokenize_sentences(bohemiaCh1Cl)
@@ -310,10 +339,17 @@ tm::inspect(bohemiaStopTDM)
 
 ## dendrograms
 bohemiaDF1<-as.data.frame(bohemiaStopTDM[[1]])
-bohemiaDist1<-dist(bohemiaDF1)
-bohemiaDG1<-hclust(bohemiaDist1,method="ward.D2")
-str(bohemiaDG1)
-plot(bohemiaDG1, labels=FALSE)
+
+#DENDROGRAM WITH WORD LABELS
+distMatrix<-dist(bohemiaDF1, method = "euclidean")
+distMatrix<-na.omit(distMatrix)
+bohemiaDG1<-hclust(distMatrix, method="ward.D2")
+plot(bohemiaDG1)
+
+#bohemiaDist1<-dist(bohemiaDF1)
+#bohemiaDG1<-hclust(bohemiaDist1,method="ward.D2")
+#str(bohemiaDG1)
+#plot(bohemiaDG1, labels=FALSE)
 
 bohemiaDF2<-as.data.frame(bohemiaStopTDM[[2]])
 bohemiaDist2<-dist(bohemiaDF2)
@@ -619,4 +655,3 @@ str(bohemiaTFIDF3)
 stringdist(as.character(btext1[1]), as.character(btext2[1]))
 stringdist(as.character(btext1[1]), as.character(btext3[1]))
 stringdist(as.character(btext2[1]), as.character(btext3[1]))
-
